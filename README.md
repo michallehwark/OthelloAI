@@ -1,4 +1,4 @@
-# Project 1: Board game implementation
+# Project 1: Board game implementation -> Othello
 
 ## 02180 : Introduction to Artificial Intelligence
 
