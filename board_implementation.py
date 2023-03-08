@@ -117,8 +117,8 @@ class Board(object):
         # place a piece (color) in the specified coordinates 
         self._board[x_start][y_start] = color
         # find out the opposite color
-        if color == 'X':
-            opposite_color = 'O'
+        if color == 1:
+            opposite_color = -1
         else:
             opposite_color = 'X'
 
@@ -312,9 +312,9 @@ class Board(object):
         column = str(event[0]).upper()
 
         # check if the coordinates are inside the board/ matrix
-        if row in '123456' and column in 'ABCDEF':
+        if row in '123456' and column in '123456':
             x_coordiante = '123456'.index(row)
-            y_coordinate = 'ABCDEF'.index(column)
+            y_coordinate = '123456'.index(column)
 
         return x_coordiante, y_coordinate
 
