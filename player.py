@@ -20,4 +20,4 @@ class Player(object):
         """
         pass
     
-    def 
+    def de
