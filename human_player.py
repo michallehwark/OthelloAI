@@ -1,17 +1,18 @@
 
+from player import Player
 
 class Human_player(Player):
     """
     class for a human player
     """
 
-    def _init_(self, color):
+    def __init__(self, color):
         """
         constructor for the class Human_player
         inherit from the class Player -> Player initializes
-        param color -> the color, 1 for black and -1 for white
+        param color -> the color, X for black and O for white
         """
-        super()._init_(color)
+        super().__init__(color)
 
     def make_a_move(self, board):
         """

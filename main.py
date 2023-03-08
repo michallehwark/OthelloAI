@@ -1,5 +1,5 @@
 
-
+from game_implementation import Game
 from human_player import Human_player
 
 if __name__ == "__main__":
@@ -12,16 +12,16 @@ if __name__ == "__main__":
 
         if input_value == 1:
             # the color black corresponds to X and the color white corresponds to O
-            black = Human_player(1)
-            white = Human_player(-1)
+            black = Human_player("X")
+            white = Human_player("O")
             incorrect_input = False 
         elif input_value == 2:
-            black = Human_player(1)
-            white = AI_player(-1)
+            black = Human_player("X")
+            white = AI_player("O")
             incorrect_input = False 
         else:
             print('Please enter either game mode 1 or game mode 2!')
             incorrect_input = True
 
-        game = Game(black_player, white_player)
-        game.run()
+        game = Game(black, white)
+        game.run_game()

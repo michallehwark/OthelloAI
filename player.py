@@ -5,10 +5,10 @@ class Player(object):
     class for a general player
     """
 
-    def _init_(self, color=None):
+    def __init__(self, color=None):
         """
         constructor for the class player
-        param color -> the color, 1 for black and -1 for white
+        param color -> the color, X for black and O for white
         """
         self.color = color
 

@@ -4,24 +4,25 @@ board_size = 6
 class Board(object):
     """
     class for the board
-    an empy space corresponds to a 0 in the matrix
-    a black piece corresponds to a 1 in the matrix
-    a white piece corresponds to a -1 in the matrix
+    an empy space corresponds to a . in the matrix
+    a black piece corresponds to a X in the matrix
+    a white piece corresponds to a O in the matrix
     """
     
-    def _init_(self):
+    def __init__(self):
         """
         constructor of the class Board
         """
-        self.empty = 0
-        for i in range(board_size):
-            for j in range(board_size):
-                self.matrix = self.empty
+        self.empty = '.'
+        """ for i in range(6):
+            for j in range(6):
+                self._board = self.empty """
+        self._board = [[self.empty for _ in range(6)] for _ in range(6)]
         # initialize the middle square of the board 
-        self._board[board_size/2-1][board_size/2] = 1
-        self._board[board_size/2][board_size/2-1] = 1
-        self._board[board_size/2-1][board_size/2-1] = -1
-        self._board[board_size/2-][board_size/2] = -1
+        self._board[2][3] = 'X'
+        self._board[3][2] = 'X'
+        self._board[3][3] = 'O'
+        self._board[4][4] = 'O'
 
 
     def _getvalue_(self, row, column):
@@ -49,9 +50,9 @@ class Board(object):
     def counter(self, color):
         """
         counter in order to find out the actual number of pieces of a certain color
-        0 corresponds to none of the colors
-        1 corresponds to the color black
-        -1 corresponds to the color white
+        . corresponds to none of the colors
+        X corresponds to the color black
+        O corresponds to the color white
         param color -> the color of interest, the one we want to know the number of pieces of
         """
         counter = 0
@@ -68,7 +69,7 @@ class Board(object):
         check which player is winning, based on the number of pieces in the color of each player
         return 0 -> no player is winning, draw
         return 1 -> black player is winning
-        return -1 -> white player is winning
+        return 2 -> white player is winning
         also return the difference of number of pieces of each color
         """
         # initial number of pieces of each color
@@ -77,10 +78,10 @@ class Board(object):
         for i in range(board_size):
             for j in range(board_size):
                 # black counter
-                if self._board[i][j] == 1:
+                if self._board[i][j] == 'X':
                     black_counter += 1
                 # white counter
-                if self._board[i][j] == -1:
+                if self._board[i][j] == 'O':
                     white_counter += 1
 
         if black_counter > white_counter:
@@ -90,7 +91,7 @@ class Board(object):
         elif black_counter < white_counter:
             # white is the winner 
             difference = white_counter - black_counter 
-            return -1, difference
+            return 2, difference
         elif black_counter == white_counter:
             # Indicates a tie, the number of black pieces is equal to the number of white
             difference = 0
@@ -110,16 +111,16 @@ class Board(object):
         x_start, y_start = event
 
         # check if there is already a piece placed on the coordinates in question or if the coordinates are out of bounds
-        if not self.bound_check(x_start, y_start) or self._board[x_start][y_start] != empty:
+        if not self.bound_check(x_start, y_start) or self._board[x_start][y_start] != self.empty:
             return False
 
         # place a piece (color) in the specified coordinates 
         self._board[x_start][y_start] = color
         # find out the opposite color
-        if color = 1:
-            opposite_color = -1
+        if color == 'X':
+            opposite_color = 'O'
         else:
-            opposite_color = -1
+            opposite_color = 'X'
 
         # initialize a list where all the positions that need to be flipped will be stored
         flipped_positions_list = []
@@ -136,7 +137,7 @@ class Board(object):
 
             # check if the new coordinates (neighbors of the initial ones) are on the board/ matrix
             # and if they are of the opposite color (other player)
-            if self.bound_check(x_coordiante, y_coordinate) and self.board[x_coordiante][y_coordinate] == opposite_color:
+            if self.bound_check(x_coordiante, y_coordinate) and self._board[x_coordiante][y_coordinate] == opposite_color:
                 x_coordiante += x_direction
                 y_coordinate += y_direction
 
@@ -146,19 +147,19 @@ class Board(object):
 
                 # have a look at even more positions and check if they still belong to the opposite player
                 # also check if they are still on the board/matrix
-                while self.board[x_coordiante][y_coordinate] == opposite_color:
+                while self._board[x_coordiante][y_coordinate] == opposite_color:
                     x_coordiante += x_direction
                     y_coordinate += y_coordinate
                     if not self.bound_check(x_coordiante, y_coordinate):
                         break
 
-                # going out of the bounds but no opposite color -> for example -11111
+                # going out of the bounds but no opposite color -> for example OXXXX
                 # so no need to flip 
                 if not self.bound_check(x_coordiante, y_coordinate):
                     continue
 
                 # going until a position where there is the same color again (not the opposite one)
-                # example -> -1111-1
+                # example -> OXXXO
                 # need to flip the colors of the coordinates in between -> add them to the list
                 if self._board[x_coordiante][y_coordinate] == color:
                     while True:
@@ -190,7 +191,7 @@ class Board(object):
         """
         put a piece at certain coordinates (in the matrix/ board)
         param event -> the coordinates where the piece has to be placed, in the form of (row, column)
-        param color -> a piece is of a certain color (1 for black, -1 for white and 0 for no piece)
+        param color -> a piece is of a certain color (X for black, O for white and . for no piece)
         returns the list of the coordinates where a piece has been placed/ changed or FALSE if the move fails
         """
         # convert the string into digital coordinates
@@ -228,10 +229,10 @@ class Board(object):
         # make the space empty before changing it to the opposite color
         self._board[event[0]][event[1]] = self.empty
         # define the opposite color
-        if color == 1:
-            opposite_color = -1
+        if color == 'X':
+            opposite_color = 'O'
         else:
-            opposite_color = 1
+            opposite_color = 'X'
         
         for position in flipped_positions:
             # convert the string into digital coordinates
@@ -258,27 +259,27 @@ class Board(object):
     def legal_events(self, color):
         """
         create coordinates with legal moves (according to the game rules)
-        param color -> the color at a certain coordinate (1 for black, -1 for white and 0 for no piece)
+        param color -> the color at a certain coordinate (X for black, O for white and . for no piece)
         return the legal move coordinates
         """
         # specify the possible directions around one specific coordinate -> put them in a list
         possible_directions = [(-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1)]
 
         # define the opposite color
-        if color == 1:
-            opposite_color = -1
+        if color == 'X':
+            opposite_color = 'O'
         else:
-            opposite_color = 1
+            opposite_color = 'X'
 
         # find the positions around the opposite color position -> the legal positions
         # initialize a list where all these positions will be stocked
         pos_around_opposite = []
 
         # iterate over the whole matrix/ board
-        board_created = self._board
+        board = self._board
         for i in range(board_size):
             for j in range(board_size):
-                if board_created[i][j] == opposite_color:
+                if board[i][j] == opposite_color:
                     for x_direction, y_direction in possible_directions:
                         x_coordiante = i + x_direction
                         y_coordinate = i + y_direction
@@ -309,9 +310,9 @@ class Board(object):
         column = str(event[0]).upper()
 
         # check if the coordinates are inside the board/ matrix
-        if row in '123456' and column in 'ABCDEF'
-        x_coordiante = '123456'.index(row)
-        y_coordinate = 'ABCDEF'.index(column)
+        if row in '123456' and column in 'ABCDEF':
+            x_coordiante = '123456'.index(row)
+            y_coordinate = 'ABCDEF'.index(column)
 
         return x_coordiante, y_coordinate
 
