@@ -116,7 +116,7 @@ class Board(object):
         # place a piece (color) in the specified coordinates 
         self._board[x_start][y_start] = color
         # find out the opposite color
-        if color = 1:
+        if color == 1:
             opposite_color = -1
         else:
             opposite_color = -1
@@ -200,7 +200,7 @@ class Board(object):
         fliped_pieces = self.flip_check(event, color)
 
         # change the coordinates of the other player's piece, if there is
-        if fliped_pieces
+        if fliped_pieces:
             for fliped_piece in fliped_pieces:
                 x, y = self.board_to_digital(fliped_piece)
                 self._board[x][y] = color
@@ -309,9 +309,9 @@ class Board(object):
         column = str(event[0]).upper()
 
         # check if the coordinates are inside the board/ matrix
-        if row in '123456' and column in '123456'
-        x_coordiante = '123456'.index(row)
-        y_coordinate = '123456'.index(column)
+        if row in '123456' and column in '123456':
+            x_coordiante = '123456'.index(row)
+            y_coordinate = '123456'.index(column)
 
         return x_coordiante, y_coordinate
 
