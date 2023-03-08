@@ -20,4 +20,12 @@ class Player(object):
         """
         pass
     
-    def de
+    def player_move(self, board, event):
+        """
+        change a piece, the coordinates of the piece dropped by the root piece get the coordinate list of the reverse piece
+        param board -> board/ matrix
+        param action -> the coordinates of the dropped piece
+        returns the reverse list of pawn coordinates
+        """
+        flipped_position = board.make_move(event, self.color)
+        return flipped_position

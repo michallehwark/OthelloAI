@@ -7,8 +7,7 @@ class Game(object):
     class for the game
     """
 
-
-def _init_(self, black_player, white_player):
+    def _init_(self, black_player, white_player):
         """
         constructor of the class Game
         color black corresponds to 1 and color white corresponds to -1
@@ -19,17 +18,17 @@ def _init_(self, black_player, white_player):
         self.white_player = white_player
         self.black_player.color = 1
         self.white_player.color = -
-        
+    
 
-def change_player(self, black_player, white_player):
-    """
-    change the current player 
-    param black_player -> the player playing with the color black
-    param white_player -> the player playing with the color white
-    returns the current player
-    """
-    # start with the black player
-    if self.current_player is None:
+    def change_player(self, black_player, white_player):
+        """
+        change the current player 
+        param black_player -> the player playing with the color black
+        param white_player -> the player playing with the color white
+        returns the current player
+        """
+        # start with the black player
+        if self.current_player is None:
             return black_player
         else:
             # if the current player is the black player -> change to white player
@@ -137,10 +136,8 @@ def change_player(self, black_player, white_player):
             try:
                 # a player can't try more than 5 times to make a legal move -> in range(0,5)
                 for i in range(0, 5):
-                    # get the position of the move
-                    # WILL FOR SURE NOT WORK, PROBLEM WITH TIME
-                    # ALSO -> GET_MOVE IS IN THE CLASS OF THE PLAYER SO NOT YET CODED 
-                    event = func_timeout(60, self.current_player.get_move, kwargs={'board': self.board})
+                    # get the position of the move 
+                    event = func_timeout(60, self.current_player.get_best_move, kwargs={'board': self.board})
                     #event = self.current_player.get_move
 
                     # for input Q or q -> the game has to end directly, it will be ended with the actual points for both players

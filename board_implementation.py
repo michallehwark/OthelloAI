@@ -38,14 +38,14 @@ class Board(object):
         display the game board on the terminal
         """
         board = self._board
-        # print column names -> MAYBE NOT WORKING OR MAYBE MODIFY!!!
-        print(' ', ' '.join(list('123456')))  
+        # print column names 
+        print(' ', ' '.join(list('ABCDEF'))) 
         # print row names and the whole matrix (board)
         for i in range(board_size):
-            # -> MAYBE NOT WORKING OR MAYBE MODIFY!!!
             print(str(i + 1), ' '.join(board[i]))
 
 
+    # COULD BE IMPROVED, RETURN TUPLE
     def counter(self, color):
         """
         counter in order to find out the actual number of pieces of a certain color
@@ -94,7 +94,7 @@ class Board(object):
         elif black_counter == white_counter:
             # Indicates a tie, the number of black pieces is equal to the number of white
             difference = 0
-            return 2, difference
+            return 0, difference
 
 
     def legal_move_check(self, event, color):
@@ -197,10 +197,10 @@ class Board(object):
         if isinstance(event, str):
             event = self.board_to_digital(event)
 
-        fliped_pieces = self.flip_check(event, color)
+        fliped_pieces = self.legal_move_check(event, color)
 
         # change the coordinates of the other player's piece, if there is
-        if fliped_pieces
+        if fliped_pieces:
             for fliped_piece in fliped_pieces:
                 x, y = self.board_to_digital(fliped_piece)
                 self._board[x][y] = color
@@ -309,9 +309,9 @@ class Board(object):
         column = str(event[0]).upper()
 
         # check if the coordinates are inside the board/ matrix
-        if row in '123456' and column in '123456'
+        if row in '123456' and column in 'ABCDEF'
         x_coordiante = '123456'.index(row)
-        y_coordinate = '123456'.index(column)
+        y_coordinate = 'ABCDEF'.index(column)
 
         return x_coordiante, y_coordinate
 
@@ -327,8 +327,7 @@ class Board(object):
 
         # check if the coordinates are inside the board
         if row in size_list and column in size_list:
-            # MIGHT NOT WORK CORRECTLY
-            return str(column+1) + str(row+1)
+            return chr(ord('A') + col) + str(row + 1)
 
 
 
