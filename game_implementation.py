@@ -1,6 +1,8 @@
 
 from board_implementation import Board
 from func_timeout import func_timeout, FunctionTimedOut
+from copy import deepcopy
+
 
 class Game(object):
     """
@@ -49,7 +51,7 @@ class Game(object):
             print('There is a draw, no winner!')
         elif winner == 1:
             print('The black player wins the game!')
-        elif winnter == 2:
+        elif winner == 2:
             print('The white player wins the game!')
         # DELETE THIS PART 
         else:
@@ -76,10 +78,10 @@ class Game(object):
             winner = 1
         
         # used too many attempts in order to put a piece legally on the board
-        if is_legal:
+        if attempt_problem:
             print('\n{} tried too many times to put a piece legally on the board, so {} wins'.format(loser_color, winner_color))
         # the board has been illegally modified
-        if is_board:
+        if board_problem:
             print('\n{} made illegal changes to the chessboard, so {} wins'.format(loser_color, winner_color))
 
         # since the reason for the game ending is special -> the difference between winner and loser is set to 0
@@ -101,6 +103,7 @@ class Game(object):
         print('\nSTART OF THE GAME OTHELLO\n')
 
         # POSSIBLE PROBLEM SINCE SOMETHING IS MISSING HERE (TIME PART)
+        self.board.show_board()
 
         # while loop -> ensure that the game goes on until it is over
         while True:
@@ -135,15 +138,16 @@ class Game(object):
             # if there are legal moves for the current player
             # a player can't try more than 5 times to make a legal move -> in range(0,5)
             for i in range(0, 5):
+                print('i', i)
                 # get the position of the move 
-                event = func_timeout(60, self.current_player.get_best_move, kwargs={'board': self.board})
+                event = func_timeout(60, self.current_player.make_a_move, kwargs={'board': self.board})
                 #event = self.current_player.get_move
 
                 # for input Q or q -> the game has to end directly, it will be ended with the actual points for both players
                 if event == 'q' or event == 'Q':
                     break
                 # maybe the current move is not legal
-                if action not in legal_moves:
+                if event not in legal_moves:
                     print('This move is not legal, please put your piece at another (legal) location!')
                     continue
                 # the current move is legal
@@ -168,10 +172,10 @@ class Game(object):
                 continue
             else:
                 # update the game
-                self.board.make_a_move(event, color)
+                self.board.make_move(event, color)
 
                 # print the current matrix/ board in the terminal
-                self.board.show_board
+                self.board.show_board()
 
                 # check if the game is over
                 if self.end_of_game():
@@ -179,7 +183,7 @@ class Game(object):
                     break
             
         print('THE GAME OTHELLO IS OVER')
-        self.show_board()
+        self.board.show_board()
         self.show_winner(winner)
 
         # return the winner and the difference in points
@@ -198,8 +202,8 @@ class Game(object):
         # check if the current player has a legal possible move
         # if not, change the player and check the same
         # if there is no legal possible move for none of the players -> the game is over
-        black_move_list = list(self.board.legal_events(1))
-        white_move_list = list(self.board.legal_events(-1))
+        black_move_list = list(self.board.legal_events('X'))
+        white_move_list = list(self.board.legal_events('O'))
 
         # check if the lists contain any legal moves, if not -> game over
         if len(black_move_list) == 0 and len(white_move_list) == 0:

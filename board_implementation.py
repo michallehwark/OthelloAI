@@ -19,10 +19,10 @@ class Board(object):
                 self._board = self.empty """
         self._board = [[self.empty for _ in range(6)] for _ in range(6)]
         # initialize the middle square of the board 
+        self._board[2][2] = 'O'
         self._board[2][3] = 'X'
         self._board[3][2] = 'X'
         self._board[3][3] = 'O'
-        self._board[4][4] = 'O'
 
 
     def _getvalue_(self, row, column):
@@ -101,7 +101,7 @@ class Board(object):
     def legal_move_check(self, event, color):
         """
         check if the current move is legal or not
-        param event -> next position
+        param event -> the position
         param color -> the current color of the position in question
         return -> list of the reversed coordinates of the other player or FALSE if the move is not legal 
         """
@@ -128,6 +128,7 @@ class Board(object):
 
         # have a look at the neighbours of the initial position
         for x_direction, y_direction in [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]:
+
             # initialize x and y with the initial coordinates
             x_coordiante = x_start
             y_coordinate = y_start
@@ -149,7 +150,7 @@ class Board(object):
                 # also check if they are still on the board/matrix
                 while self._board[x_coordiante][y_coordinate] == opposite_color:
                     x_coordiante += x_direction
-                    y_coordinate += y_coordinate
+                    y_coordinate += y_direction
                     if not self.bound_check(x_coordiante, y_coordinate):
                         break
 
@@ -163,8 +164,8 @@ class Board(object):
                 # need to flip the colors of the coordinates in between -> add them to the list
                 if self._board[x_coordiante][y_coordinate] == color:
                     while True:
-                        x_coordiante -= x_start
-                        y_coordinate -= y_start
+                        x_coordiante -= x_direction
+                        y_coordinate -= y_direction
                         # going back until the initial position
                         if x_coordiante == x_start and y_coordinate == y_start:
                             break
@@ -208,7 +209,7 @@ class Board(object):
             # change the coordinates
             x, y = event
             # change the matrix/ board accordingly
-            self._board[X][y] = color
+            self._board[x][y] = color
             return fliped_pieces
         else:
             return False
@@ -290,6 +291,7 @@ class Board(object):
         # use yield instead of return since the functions will return a large set of values that will only be needed once
         # yield -> returns a generator
         size_list = list(range(board_size))
+
         for position in pos_around_opposite:
             if self.legal_move_check(position, color):
                 # check the borders
@@ -297,7 +299,7 @@ class Board(object):
                     # convert from digital coordinates into board coordinates
                     position = self.digital_to_board(position)
                 yield position
-            
+
 
     def board_to_digital(self, event):
         """
@@ -328,7 +330,7 @@ class Board(object):
 
         # check if the coordinates are inside the board
         if row in size_list and column in size_list:
-            return chr(ord('A') + col) + str(row + 1)
+            return chr(ord('A') + column) + str(row + 1)
 
 
 

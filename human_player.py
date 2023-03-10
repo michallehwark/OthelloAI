@@ -30,10 +30,7 @@ class Human_player(Player):
         # 'Q' or 'q' -> returns 'Q' and end of game
         # board position as for example 'A1' -> check if input correct and legal (game rules)
         while True:
-            event = input("Please enter the coordinate where you want to place a disk!\
-            Consider that the coordinate has to be a valid choice in the actual game situation.\
-            Example -> 'A5' or 'D2'\
-            If you want to end the game, please enter q or Q.")
+            event = input("Please enter the coordinate where you want to place a disk!\nConsider that the coordinate has to be a valid choice in the actual game situation.\nExample -> 'A5' or 'D2'\nIf you want to end the game, please enter q or Q.\n")
             
             if event == 'q' or event == 'Q':
                 return "Q"
@@ -47,6 +44,8 @@ class Human_player(Player):
                         return event
                 else:
                     print('Please enter a coordinate that corresponds to a valid choice in the actual game situation and that is on the board!')
+
+        print('end of function make a move')
 
          
     

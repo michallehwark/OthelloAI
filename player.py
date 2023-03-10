@@ -12,7 +12,7 @@ class Player(object):
         """
         self.color = color
 
-    def get_best_move(self, board):
+    def make_a_move(self, board):
         """
         get the coordinates of the best move position in the current board situation
         :param board: current board/ matrix
