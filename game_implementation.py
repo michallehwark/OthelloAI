@@ -210,4 +210,3 @@ class Game(object):
             return True
         else:
             return False
-
