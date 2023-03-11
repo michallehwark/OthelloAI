@@ -1,5 +1,4 @@
 
-board_size = 6
 
 class Board(object):
     """
@@ -42,11 +41,12 @@ class Board(object):
         # print column names 
         print(' ', ' '.join(list('ABCDEF'))) 
         # print row names and the whole matrix (board)
-        for i in range(board_size):
+        for i in range(6):
             print(str(i + 1), ' '.join(board[i]))
+        print("~   Black: " + str(self.counter('X')))
+        print("~   White: " + str(self.counter('O')) + '\n')
 
 
-    # COULD BE IMPROVED, RETURN TUPLE
     def counter(self, color):
         """
         counter in order to find out the actual number of pieces of a certain color
@@ -56,9 +56,9 @@ class Board(object):
         param color -> the color of interest, the one we want to know the number of pieces of
         """
         counter = 0
-        for i in range(board_size):
-            for j in range(board_size):
-                if self._board == color:
+        for i in range(6):
+            for j in range(6):
+                if self._board[i][j] == color:
                     counter += 1
 
         return counter
@@ -75,8 +75,8 @@ class Board(object):
         # initial number of pieces of each color
         black_counter = 0
         white_counter = 0
-        for i in range(board_size):
-            for j in range(board_size):
+        for i in range(6):
+            for j in range(6):
                 # black counter
                 if self._board[i][j] == 'X':
                     black_counter += 1
@@ -130,47 +130,47 @@ class Board(object):
         for x_direction, y_direction in [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]:
 
             # initialize x and y with the initial coordinates
-            x_coordiante = x_start
+            x_coordinate = x_start
             y_coordinate = y_start
             # go in all the possible directions from the point of view of the initial coordinates
-            x_coordiante += x_direction
+            x_coordinate += x_direction
             y_coordinate += y_direction
 
             # check if the new coordinates (neighbors of the initial ones) are on the board/ matrix
             # and if they are of the opposite color (other player)
-            if self.bound_check(x_coordiante, y_coordinate) and self._board[x_coordiante][y_coordinate] == opposite_color:
-                x_coordiante += x_direction
+            if self.bound_check(x_coordinate, y_coordinate) and self._board[x_coordinate][y_coordinate] == opposite_color:
+                x_coordinate += x_direction
                 y_coordinate += y_direction
 
                 # check if the new point is still on the matrix/ board
-                if not self.bound_check(x_coordiante, y_coordinate):
+                if not self.bound_check(x_coordinate, y_coordinate):
                     continue
 
                 # have a look at even more positions and check if they still belong to the opposite player
                 # also check if they are still on the board/matrix
-                while self._board[x_coordiante][y_coordinate] == opposite_color:
-                    x_coordiante += x_direction
+                while self._board[x_coordinate][y_coordinate] == opposite_color:
+                    x_coordinate += x_direction
                     y_coordinate += y_direction
-                    if not self.bound_check(x_coordiante, y_coordinate):
+                    if not self.bound_check(x_coordinate, y_coordinate):
                         break
 
                 # going out of the bounds but no opposite color -> for example OXXXX
                 # so no need to flip 
-                if not self.bound_check(x_coordiante, y_coordinate):
+                if not self.bound_check(x_coordinate, y_coordinate):
                     continue
 
                 # going until a position where there is the same color again (not the opposite one)
                 # example -> OXXXO
                 # need to flip the colors of the coordinates in between -> add them to the list
-                if self._board[x_coordiante][y_coordinate] == color:
+                if self._board[x_coordinate][y_coordinate] == color:
                     while True:
-                        x_coordiante -= x_direction
+                        x_coordinate -= x_direction
                         y_coordinate -= y_direction
                         # going back until the initial position
-                        if x_coordiante == x_start and y_coordinate == y_start:
+                        if x_coordinate == x_start and y_coordinate == y_start:
                             break
                         # add the positions at which the color has to be flipped to the list
-                        flipped_positions_list.append([x_coordiante, y_coordinate])
+                        flipped_positions_list.append([x_coordinate, y_coordinate])
 
         # take off again the color at the initial coordinates
         self._board[x_start][y_start] = self.empty
@@ -250,7 +250,7 @@ class Board(object):
         param column -> the column coordinate of a specifit point
         return -> TRUE if the coordinates are on the board and FALSE if not
         """
-        if row >= 0 and row < (board_size-1) and column >= 0 and column < (board_size-1):
+        if row >= 0 and row <= 5 and column >= 0 and column <= 5:
             bound_check = True
         else:
             bound_check = False
@@ -278,19 +278,19 @@ class Board(object):
 
         # iterate over the whole matrix/ board
         board = self._board
-        for i in range(board_size):
-            for j in range(board_size):
+        for i in range(6):
+            for j in range(6):
                 if board[i][j] == opposite_color:
                     for x_direction, y_direction in possible_directions:
-                        x_coordiante = i + x_direction
-                        y_coordinate = i + y_direction
+                        x_coordinate = i + x_direction
+                        y_coordinate = j + y_direction
                         # check if the coordinates are inside the board and if there is no other piece at the moment
-                        if 0 <= x_coordiante <= (board_size-1) and 0 <= y_coordinate <= (board_size-1) and board[x_coordiante][y_coordinate] == self.empty and (x_coordiante, y_coordinate) not in pos_around_opposite:
-                            pos_around_opposite.append((x_coordiante, y_coordinate))
+                        if 0 <= x_coordinate <= 5 and 0 <= y_coordinate <= 5 and board[x_coordinate][y_coordinate] == self.empty and (x_coordinate, y_coordinate) not in pos_around_opposite:
+                            pos_around_opposite.append((x_coordinate, y_coordinate))
 
         # use yield instead of return since the functions will return a large set of values that will only be needed once
         # yield -> returns a generator
-        size_list = list(range(board_size))
+        size_list = list(range(6))
 
         for position in pos_around_opposite:
             if self.legal_move_check(position, color):
@@ -313,10 +313,10 @@ class Board(object):
 
         # check if the coordinates are inside the board/ matrix
         if row in '123456' and column in 'ABCDEF':
-            x_coordiante = '123456'.index(row)
+            x_coordinate = '123456'.index(row)
             y_coordinate = 'ABCDEF'.index(column)
 
-        return x_coordiante, y_coordinate
+        return x_coordinate, y_coordinate
 
 
     def digital_to_board(self, event):
@@ -326,12 +326,11 @@ class Board(object):
         return the board coordinates of a position, for example for '(0,0)' it would be '11'
         """
         row, column = event
-        size_list = list(range(board_size))
+        size_list = list(range(6))
 
         # check if the coordinates are inside the board
         if row in size_list and column in size_list:
             return chr(ord('A') + column) + str(row + 1)
-
 
 
 

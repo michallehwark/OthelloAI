@@ -39,8 +39,7 @@ class Game(object):
             # if the current player is the white player -> change to black player
             else:
                 return black_player
-
-    # MIGHT NOT WORK   
+  
     def show_winner(self, winner):
         """
         print the winner
@@ -48,17 +47,14 @@ class Game(object):
         no return
         """
         if winner == 0:
-            print('There is a draw, no winner!')
+            print('There is no winner (draw)!')
         elif winner == 1:
             print('The black player wins the game!')
         elif winner == 2:
             print('The white player wins the game!')
-        # DELETE THIS PART 
-        else:
-            print('There is a problem!')
 
     
-    def forced_game_end(self, board_problem=False, attempt_problem=False):
+    def forced_game_end(self, time_problem=False, board_problem=False, attempt_problem=False):
         """
         if more than 5 attempts are used in order to place legally a piece on the board -> the game is over
         it is also not possible to modify the board
@@ -74,9 +70,12 @@ class Game(object):
             winner = 2
         else:
             winner_color = 'Black (X)'
-            loser_color = 'White (=)'
+            loser_color = 'White (O)'
             winner = 1
         
+        # the time limit in order to put a piece has been passed
+        if time_problem:
+            print('\n{} took too much time to put a piece, so {} wins!'.format(loser_color, winner_color))
         # used too many attempts in order to put a piece legally on the board
         if attempt_problem:
             print('\n{} tried too many times to put a piece legally on the board, so {} wins'.format(loser_color, winner_color))
@@ -100,7 +99,7 @@ class Game(object):
         difference = -1
 
         # print in the terminal that the game starts
-        print('\nSTART OF THE GAME OTHELLO\n')
+        print('\n-----START OF THE GAME OTHELLO-----\n')
 
         # POSSIBLE PROBLEM SINCE SOMETHING IS MISSING HERE (TIME PART)
         self.board.show_board()
@@ -135,29 +134,22 @@ class Game(object):
             # create a copy of the board
             board = deepcopy(self.board._board)
 
-            # if there are legal moves for the current player
-            # a player can't try more than 5 times to make a legal move -> in range(0,5)
-            for i in range(0, 5):
-                print('i', i)
-                # get the position of the move 
+            # if there are legal moves for the current player -> let him make a move
+            try:
+                # get the position of the move
                 event = func_timeout(60, self.current_player.make_a_move, kwargs={'board': self.board})
-                #event = self.current_player.get_move
 
-                # for input Q or q -> the game has to end directly, it will be ended with the actual points for both players
-                if event == 'q' or event == 'Q':
+                # the function make_a_move returns 0 if more than 5 attempts have been used
+                if event == 0:
+                    winner, difference = self.forced_game_end(attempt_problem=True)
                     break
-                # maybe the current move is not legal
-                if event not in legal_moves:
-                    print('This move is not legal, please put your piece at another (legal) location!')
-                    continue
-                # the current move is legal
-                else:
-                    break
-            # the player used all his 5 attemps to place a piece correctly -> end the game
-            else:
-                winner, difference = self.forced_game_end(attempt_problem=True)
-                print('5 failed attempts to put a piece legally on the board -> game over!')
 
+            # if the player takes too long to put a piece -> game over
+            except FunctionTimedOut:
+                winner, difference = self.forced_game_end(time_problem=True)
+                break
+
+            """UNCLEAR FOR THE MOMENT"""
             # the board has been modified illegally
             if board != self.board._board:
                 winner, difference = self.forced_game_end(board_problem=True)
@@ -182,15 +174,15 @@ class Game(object):
                     winner, difference = self.board.winner_check()
                     break
             
-        print('THE GAME OTHELLO IS OVER')
+        print('\n-----THE GAME OTHELLO IS OVER-----\n')
         self.board.show_board()
         self.show_winner(winner)
 
         # return the winner and the difference in points
         if winner is not None and difference > -1:
-            result = {1: 'Black Player Wins!', 2: 'White Player Wins!', 0: 'There is a draw!'}[winner]
+            result = {1: 'The black player wins the game!', 2: 'The white player wins the game!', 0: 'There is no winner (draw)!'}[winner]
 
-            # WHY IS THIS IN COMMENTS
+            """UNCLEAR COMMENT, PROBABLY DELETE"""
             #return result, difference
 
 
