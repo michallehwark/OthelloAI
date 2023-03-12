@@ -18,13 +18,13 @@ class Human_player(Player):
         """
         legal position of humans based on the current board/ matrix
         param board -> the current board/ matrix
-        returns the position of the human move or Q if the game has been ended or 
+        returns the position of the human move or Q if the game has been ended or 0 if too many attemps have been used
         """
         # define the color of the human player, X for black and O for white
         if self.color == 'X':
-            player = "BLACK (X)"
+            player = "BLACK (X) (Human)"
         else:
-            player = "WHITE (O)"
+            player = "WHITE (O) (Human)"
 
         # human player -> enters the move position
         # 'Q' or 'q' -> returns 'Q' and end of game

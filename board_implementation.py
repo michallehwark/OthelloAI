@@ -193,24 +193,24 @@ class Board(object):
         put a piece at certain coordinates (in the matrix/ board)
         param event -> the coordinates where the piece has to be placed, in the form of (row, column)
         param color -> a piece is of a certain color (X for black, O for white and . for no piece)
-        returns the list of the coordinates where a piece has been placed/ changed or FALSE if the move fails
+        returns the list of the coordinates where a piece has been placed/ changed/ flipped or FALSE if the move fails
         """
         # convert the string into digital coordinates
         if isinstance(event, str):
             event = self.board_to_digital(event)
 
-        fliped_pieces = self.legal_move_check(event, color)
+        flipped_pieces = self.legal_move_check(event, color)
 
         # change the coordinates of the other player's piece, if there is
-        if fliped_pieces:
-            for fliped_piece in fliped_pieces:
-                x, y = self.board_to_digital(fliped_piece)
+        if flipped_pieces:
+            for flipped_piece in flipped_pieces:
+                x, y = self.board_to_digital(flipped_piece)
                 self._board[x][y] = color
             # change the coordinates
             x, y = event
             # change the matrix/ board accordingly
             self._board[x][y] = color
-            return fliped_pieces
+            return flipped_pieces
         else:
             return False
 

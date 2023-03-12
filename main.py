@@ -1,6 +1,7 @@
 
 from game_implementation import Game
 from human_player import Human_player
+from AI_player import AI_player
 
 if __name__ == "__main__":
 
