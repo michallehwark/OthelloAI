@@ -34,10 +34,14 @@ class AI_player(Player):
         else:
             player = "WHITE (O) (AI)"
 
+        print('Current player:', player)
         print("Please wait, {} is thinking!\n".format(player))
 
         # find the event with alpha-beta-pruning
         event = self.alpha_beta_search(board)
+
+        return event
+
 
     def alpha_beta_search(self, state):
         """
@@ -47,6 +51,8 @@ class AI_player(Player):
         """
         # find the utility value and the corresponding event
         utility, event = self.max_value(state, alpha=-float('inf'), beta=-float('inf'))
+
+        print('coucouuuuuu')
 
         # return the best found event in the current state
         return event
@@ -62,14 +68,14 @@ class AI_player(Player):
         """
         # check if the actual state is a terminal state
         if self.terminal_test(state):
-            return self.utility(state)
+            return self.utility(state), None
         
         # find all possible actions in the current state/ board situation
         possible_events = list(state.legal_events(self.color))
 
         # if there are no legal actions
         if len(possible_events) == 0:
-            return self.utility(state)
+            return self.utility(state), None
 
         # initialize the value v to -inf
         value = -float('inf')
@@ -111,14 +117,14 @@ class AI_player(Player):
         """
         # check if the actual state is a terminal state
         if self.terminal_test(state):
-            return self.utility(state)
+            return self.utility(state), None
         
         # find all possible actions in the current state/ board situation
         possible_events = list(state.legal_events(self.color))
 
         # if there are no legal actions
         if len(possible_events) == 0:
-            return self.utility(state)
+            return self.utility(state), None
 
         # initialize the value v to +inf
         value = float('inf')
