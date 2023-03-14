@@ -217,10 +217,11 @@ class Board(object):
 
     def backtrack(self, event, flipped_positions, color):
         """
-        backtracking -> MAKE BETTER COMMENT
-        param event -> 
-        param flipped_positions -> list of the flipped places on the matrix/ board
-        color -> the color of the flipped places (1 for black, -1 for white and 0 for no piece)
+        backtracking, store the current situation on the board
+        ensure that the current board is not changed by calling AI algorithms that might change it temporarilly 
+        param event -> the coordinates of the point that was responsible for a certain temporar board change
+        param flipped_positions -> list of the places on the matrix/ board where the color has to be changed (restore the current board)
+        color -> the color of the piece on the point in question (1 for black, -1 for white and 0 for no piece)
         no return
         """
         # convert the string into digital coordinates
@@ -239,7 +240,7 @@ class Board(object):
             # convert the string into digital coordinates
             if isinstance(position, str):
                 position = self.board_to_digital(position)
-            # put the new (opposite) color in the desired location on the matrix/ board
+            # put the old (opposite) color in the desired location on the matrix/ board
             self._board[position[0]][position[1]] = opposite_color
 
 
