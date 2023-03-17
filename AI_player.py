@@ -21,6 +21,20 @@ class AI_player(Player):
         else:
             self.opposite_color = 'X'
 
+        self.weightMatrix = np.array([[8,0,5,5,0,8],
+                                      [0,0,1,1,0,0],
+                                      [5,1,3,3,1,5],
+                                      [5,1,3,3,1,5],
+                                      [0,0,1,1,0,0],
+                                      [8,0,5,5,0,8]])
+        
+        self.weightMatrix1 = np.array([[7,-3,2,2,-3,7],
+                                       [-3,-4,-1,-1,-4,-3],
+                                       [2,-1,1,1,-1,2],
+                                       [2,-1,1,1,-1,2],
+                                       [-3,-4,-1,-1,-4,-3],
+                                       [7,-3,2,2,-3,7]])
+
         # define with which algorithm the AI is playing
         self.algorithm = given_algorithm
 
@@ -60,9 +74,15 @@ class AI_player(Player):
         param state -> the current board situation/ state
         returns an event -> the event in the possible events that has the utility value v
         """
+        counter = 0
         # find the utility value and the corresponding event
         heuristic, event = self.max_value(state, self.depth)
-
+        print(f"Current value: {heuristic}")
+        print(f"Last move: {event}")
+        #X_score, O_score = self.heuristic_weightBoard(state)
+        #print(f"Score fot the X: {X_score}")
+        #print(f"Score fot the O: {O_score}")
+        #print(f"To find this move AI explored {noOfGames} games.")
         # return the best found event in the current state
         return event
 
@@ -78,20 +98,20 @@ class AI_player(Player):
         if self.terminal_test(state) or depth == 0:
             # there is only one possible move left, find this possible move
             only_possible_event = state.legal_events(self.color)
-            return self.heuristic(state), only_possible_event
-        
+            return self.heuristic_weightBoard(state), only_possible_event
+
         # find all possible actions in the current state/ board situation
         possible_events = list(state.legal_events(self.color))
 
         # if there are no legal actions
         if len(possible_events) == 0:
-            return self.heuristic(state), None
+            return self.heuristic_weightBoard(state), None
 
         # initialize the value v to -inf
         value = -float('inf')
         # initialize the best event to None
         best_event = None
-        
+        #print(f"min: {len(possible_events)}")
         # iterate over all possible events
         for event in possible_events:
             # find all the positions where a piece has to be placed/ flipped when considering the event in question
@@ -123,15 +143,14 @@ class AI_player(Player):
         if self.terminal_test(state) or depth == 0:
             # there is only one possible move left, find this possible move
             only_possible_event = state.legal_events(self.opposite_color)
-            return self.heuristic(state), only_possible_event
+            return self.heuristic_weightBoard(state), only_possible_event
         
         # find all possible actions in the current state/ board situation
         possible_events = list(state.legal_events(self.opposite_color))
-
         # if there are no legal actions
         if len(possible_events) == 0:
-            return self.heuristic(state), None
-
+            return self.heuristic_weightBoard(state), None
+        #print(f"min: {len(possible_events)}")
         # initialize the value v to +inf
         value = float('inf')
         # initialize the best event to None
@@ -156,7 +175,6 @@ class AI_player(Player):
 
         # return the value v and the corresponding event (which is the best possible event)
         return value, best_event
-
 
 
     def alpha_beta_search(self, state, depth):
@@ -186,14 +204,14 @@ class AI_player(Player):
         if self.terminal_test(state) or depth == 0:
             # there is only one possible move left, find this possible move
             only_possible_event = state.legal_events(self.color)
-            return self.heuristic(state), only_possible_event
+            return self.heuristic_fraction(state), only_possible_event
         
         # find all possible actions in the current state/ board situation
         possible_events = list(state.legal_events(self.color))
 
         # if there are no legal actions
         if len(possible_events) == 0:
-            return self.heuristic(state), None
+            return self.heuristic_fraction(state), None
 
         # initialize the value v to -inf
         value = -float('inf')
@@ -238,14 +256,14 @@ class AI_player(Player):
         if self.terminal_test(state) or depth == 0:
             # there is only one possible move left, find this possible move
             only_possible_event = state.legal_events(self.opposite_color)
-            return self.heuristic(state), only_possible_event
+            return self.heuristic_fraction(state), only_possible_event
         
         # find all possible actions in the current state/ board situation
         possible_events = list(state.legal_events(self.opposite_color))
 
         # if there are no legal actions
         if len(possible_events) == 0:
-            return self.heuristic(state), None
+            return self.heuristic_fraction(state), None
 
         # initialize the value v to +inf
         value = float('inf')
@@ -291,7 +309,7 @@ class AI_player(Player):
             return False
 
 
-    def heuristic(self, state):
+    def heuristic_fraction(self, state):
         """
         heuristic function
         compute the difference in the number of new flipped pieces of both players 
@@ -307,12 +325,10 @@ class AI_player(Player):
         fraction_pieces = difference_in_pieces / total_number_pieces
 
         return fraction_pieces
-
-        
-            
-
     
-    def utility(self, state):
+    
+    def heuristic_weightBoard(self, state):
+
         """
         utility function (or objective function or payoff function)
         defines the final numeric value for a game that ends in a certain state
@@ -334,13 +350,41 @@ class AI_player(Player):
             for line in range(6):
                 for column in range(6):
                     if board._board[line][column] == 'X':
-                        """WHY WITH A COMMA HERE?"""
                         matrix[line, column] = 1
                     elif board._board[line][column] == 'O':
                         matrix[line, column] = -1
             return matrix
 
-        return state.counter(self.color) - state.counter(self.opposite_color)
+        def determineXPosition(board):
+            matrix = np.zeros((6, 6))
+            for line in range(6):
+                for column in range(6):
+                    if board[line][column] == 1:
+                        matrix[line, column] = 1
+                    elif board[line][column] == -1:
+                        matrix[line, column] = 0
+            return matrix
+        
+        def determineOPosition(board):
+            matrix = np.zeros((6, 6))
+            for line in range(6):
+                for column in range(6):
+                    if board[line][column] == 1:
+                        matrix[line, column] = 0
+                    elif board[line][column] == -1:
+                        matrix[line, column] = 1
+            return matrix
+        
+        currentBoard = board_to_matrix(state)
+        X_position = determineXPosition(currentBoard)
+        O_position = determineOPosition(currentBoard)
+
+        # Get all the scores from currect position of X and O on board.
+        X_value = np.sum(np.multiply(X_position, self.weightMatrix1))
+        O_value = np.sum(np.multiply(O_position, self.weightMatrix1))
+
+        return  O_value - X_value
+ 
                     
 
 
