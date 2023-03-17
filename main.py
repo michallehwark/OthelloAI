@@ -19,7 +19,7 @@ if __name__ == "__main__":
             incorrect_input = False 
         elif input_value == 2:
             black = Human_player("X")
-            white = AI_player("O", "minimax_decision_algorithm", "fraction", 2)
+            white = AI_player("O", "minimax_decision_algorithm", "fraction", 5)
             incorrect_input = False 
         elif input_value == 3:
             black = Human_player("X")
@@ -27,7 +27,7 @@ if __name__ == "__main__":
             incorrect_input = False 
         elif input_value == 4:
             black = Human_player("X")
-            white = AI_player("O", "alpha_beta_search_algorithm", "fraction", 2)
+            white = AI_player("O", "alpha_beta_search_algorithm", "fraction", 5)
         elif input_value == 5:
             black = Human_player("X")
             white = AI_player("O", "alpha_beta_search_algorithm", "weightboard", 2)

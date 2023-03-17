@@ -27,6 +27,9 @@ class AI_player(Player):
         # define the heuristic function that has to be used for the algorithm
         self.heuristic = given_heuristic
 
+        #benchmark
+        self.exploredNodes = 0
+
         # define a depth for expaning the trees in the algorithms
         self.depth = given_depth
 
@@ -61,6 +64,8 @@ class AI_player(Player):
         print('Current player:', player)
         print("Please wait, {} is thinking!\n".format(player))
 
+        self.exploredNodes = 0
+
         # find the event with minimax-decision
         if self.algorithm == "minimax_decision_algorithm":
             event = self.minimax_decision(board, self.depth, self.heuristic)
@@ -69,6 +74,8 @@ class AI_player(Player):
         if self.algorithm == "alpha_beta_search_algorithm":
             event = self.alpha_beta_search(board, self.depth, self.heuristic)
 
+        #benchamark evaluation
+        print(f"AI explored {self.exploredNodes} to make this move.")
         return event
 
 
@@ -92,6 +99,7 @@ class AI_player(Player):
         param depth -> the depth unti which the tree has to be expanded
         returns the value v and the corresponding event (which is the best possible event)
         """
+        
         # check if the actual state is a terminal state
         if self.terminal_test(state) or depth == 0:
             # there is only one possible move left, find this possible move
@@ -100,11 +108,14 @@ class AI_player(Player):
             if heuristic == "fraction":
                 return self.heuristic_fraction(state), only_possible_event
             elif heuristic == "weightboard":
-                return self.heuristic_weightBoard(state), only_possible_event
+                return self.heuristic_weightBoard(state), only_possible_event 
 
         
         # find all possible actions in the current state/ board situation
         possible_events = list(state.legal_events(self.color))
+
+        #benchamrk
+        self.exploredNodes += len(possible_events)
 
         # if there are no legal actions
         if len(possible_events) == 0:
@@ -159,6 +170,9 @@ class AI_player(Player):
         # find all possible actions in the current state/ board situation
         possible_events = list(state.legal_events(self.opposite_color))
 
+        #benchamrk
+        self.exploredNodes += len(possible_events)
+
         # if there are no legal actions
         if len(possible_events) == 0:
             # take the desired heuristic function
@@ -191,7 +205,6 @@ class AI_player(Player):
 
         # return the value v and the corresponding event (which is the best possible event)
         return value, best_event
-
 
 
     def alpha_beta_search(self, state, depth, heuristic):
@@ -229,6 +242,9 @@ class AI_player(Player):
         
         # find all possible actions in the current state/ board situation
         possible_events = list(state.legal_events(self.color))
+
+        #benchamrk
+        self.exploredNodes += len(possible_events)
 
         # if there are no legal actions
         if len(possible_events) == 0:
@@ -289,6 +305,9 @@ class AI_player(Player):
         
         # find all possible actions in the current state/ board situation
         possible_events = list(state.legal_events(self.opposite_color))
+
+        #benchamrk
+        self.exploredNodes += len(possible_events)
 
         # if there are no legal actions
         if len(possible_events) == 0:
