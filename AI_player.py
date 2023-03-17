@@ -8,7 +8,7 @@ class AI_player(Player):
     class for an AI player
     """
 
-    def __init__(self, color, given_algorithm, given_depth):
+    def __init__(self, color, given_algorithm, given_heuristic, given_depth):
         """
         constructor for the class AIPlayer
         param color -> the color of the AI player, X for black and O for white
@@ -21,6 +21,16 @@ class AI_player(Player):
         else:
             self.opposite_color = 'X'
 
+        # define with which algorithm the AI is playing
+        self.algorithm = given_algorithm
+
+        # define the heuristic function that has to be used for the algorithm
+        self.heuristic = given_heuristic
+
+        # define a depth for expaning the trees in the algorithms
+        self.depth = given_depth
+
+        # weight matrix for the heuristic function weightboard
         self.weightMatrix = np.array([[8,0,5,5,0,8],
                                       [0,0,1,1,0,0],
                                       [5,1,3,3,1,5],
@@ -34,12 +44,6 @@ class AI_player(Player):
                                        [2,-1,1,1,-1,2],
                                        [-3,-4,-1,-1,-4,-3],
                                        [7,-3,2,2,-3,7]])
-
-        # define with which algorithm the AI is playing
-        self.algorithm = given_algorithm
-
-        # define a depth for expaning the trees in the algorithms
-        self.depth = given_depth
     
 
     def make_a_move(self, board):
@@ -59,35 +63,29 @@ class AI_player(Player):
 
         # find the event with minimax-decision
         if self.algorithm == "minimax_decision_algorithm":
-            event = self.minimax_decision(board, self.depth)
+            event = self.minimax_decision(board, self.depth, self.heuristic)
 
         # find the event with alpha-beta-search
         if self.algorithm == "alpha_beta_search_algorithm":
-            event = self.alpha_beta_search(board, self.depth)
+            event = self.alpha_beta_search(board, self.depth, self.heuristic)
 
         return event
 
 
-    def minimax_decision(self, state, depth):
+    def minimax_decision(self, state, depth, heuristic):
         """
         implementation of the minimax algorithm
         param state -> the current board situation/ state
         returns an event -> the event in the possible events that has the utility value v
         """
-        counter = 0
         # find the utility value and the corresponding event
-        heuristic, event = self.max_value(state, self.depth)
-        print(f"Current value: {heuristic}")
-        print(f"Last move: {event}")
-        #X_score, O_score = self.heuristic_weightBoard(state)
-        #print(f"Score fot the X: {X_score}")
-        #print(f"Score fot the O: {O_score}")
-        #print(f"To find this move AI explored {noOfGames} games.")
+        heuristic, event = self.max_value(state, self.depth, self.heuristic)
+
         # return the best found event in the current state
         return event
 
 
-    def max_value(self, state, depth):
+    def max_value(self, state, depth, heuristic):
         """
         implementation if the max value function
         param state -> the current board situation/ state
@@ -98,20 +96,29 @@ class AI_player(Player):
         if self.terminal_test(state) or depth == 0:
             # there is only one possible move left, find this possible move
             only_possible_event = state.legal_events(self.color)
-            return self.heuristic_weightBoard(state), only_possible_event
+            # take the desired heuristic function
+            if heuristic == "fraction":
+                return self.heuristic_fraction(state), only_possible_event
+            elif heuristic == "weightboard":
+                return self.heuristic_weightBoard(state), only_possible_event
 
+        
         # find all possible actions in the current state/ board situation
         possible_events = list(state.legal_events(self.color))
 
         # if there are no legal actions
         if len(possible_events) == 0:
-            return self.heuristic_weightBoard(state), None
+            # take the desired heuristic function
+            if heuristic == "fraction":
+                return self.heuristic_fraction(state), None
+            elif heuristic == "weightboard":
+                return self.heuristic_weightBoard(state), None
 
         # initialize the value v to -inf
         value = -float('inf')
         # initialize the best event to None
         best_event = None
-        #print(f"min: {len(possible_events)}")
+        
         # iterate over all possible events
         for event in possible_events:
             # find all the positions where a piece has to be placed/ flipped when considering the event in question
@@ -120,7 +127,7 @@ class AI_player(Player):
             if not flipped_positions:
                 continue
             # call min function
-            actual_value, actual_event = self.min_value(state, depth-1)
+            actual_value, actual_event = self.min_value(state, depth-1, heuristic)
             # backtrack the actual changes on the board, change all the pieces that have to be changed
             state.backtrack(event, flipped_positions, self.color)
             # check if the actual value is bigger than the value v, if yes -> replace it and replace also the best possible event
@@ -132,7 +139,7 @@ class AI_player(Player):
         return value, best_event
 
 
-    def min_value(self, state, depth):
+    def min_value(self, state, depth, heuristic):
         """
         implementation if the min value function
         param state -> the current board situation/ state
@@ -143,14 +150,23 @@ class AI_player(Player):
         if self.terminal_test(state) or depth == 0:
             # there is only one possible move left, find this possible move
             only_possible_event = state.legal_events(self.opposite_color)
-            return self.heuristic_weightBoard(state), only_possible_event
+            # take the desired heuristic function
+            if heuristic == "fraction":
+                return self.heuristic_fraction(state), only_possible_event
+            elif heuristic == "weightboard":
+                return self.heuristic_weightBoard(state), only_possible_event
         
         # find all possible actions in the current state/ board situation
         possible_events = list(state.legal_events(self.opposite_color))
+
         # if there are no legal actions
         if len(possible_events) == 0:
-            return self.heuristic_weightBoard(state), None
-        #print(f"min: {len(possible_events)}")
+            # take the desired heuristic function
+            if heuristic == "fraction":
+                return self.heuristic_fraction(state), None
+            elif heuristic == "weightboard":
+                return self.heuristic_weightBoard(state), None
+
         # initialize the value v to +inf
         value = float('inf')
         # initialize the best event to None
@@ -164,7 +180,7 @@ class AI_player(Player):
             if not flipped_positions:
                 continue
             # try to find a better value
-            actual_value, actual_event = self.max_value(state, depth-1)
+            actual_value, actual_event = self.max_value(state, depth-1, heuristic)
             # backtrack the actual changes on the board, change all the pieces that have to be changed
             state.backtrack(event, flipped_positions, self.opposite_color)
             
@@ -177,7 +193,8 @@ class AI_player(Player):
         return value, best_event
 
 
-    def alpha_beta_search(self, state, depth):
+
+    def alpha_beta_search(self, state, depth, heuristic):
         """
         implementation of the alpha-beta-pruning
         param state -> the current board situation/ state
@@ -185,13 +202,13 @@ class AI_player(Player):
         returns an event -> the event in the possible events that has the value v
         """
         # find the utility value and the corresponding event
-        heuristic, event = self.max_value_ab(state, depth, alpha=-float('inf'), beta=-float('inf'))
+        heuristic, event = self.max_value_ab(state, depth, heuristic, alpha=-float('inf'), beta=-float('inf'))
 
         # return the best found event in the current state
         return event
 
 
-    def max_value_ab(self, state, depth, alpha, beta):
+    def max_value_ab(self, state, depth, heuristic, alpha, beta):
         """
         implementation if the max value function
         param state -> the current board situation/ state
@@ -204,14 +221,22 @@ class AI_player(Player):
         if self.terminal_test(state) or depth == 0:
             # there is only one possible move left, find this possible move
             only_possible_event = state.legal_events(self.color)
-            return self.heuristic_fraction(state), only_possible_event
+            # take the desired heuristic function
+            if heuristic == "fraction":
+                return self.heuristic_fraction(state), only_possible_event
+            elif heuristic == "weightboard":
+                return self.heuristic_weightBoard(state), only_possible_event
         
         # find all possible actions in the current state/ board situation
         possible_events = list(state.legal_events(self.color))
 
         # if there are no legal actions
         if len(possible_events) == 0:
-            return self.heuristic_fraction(state), None
+            # take the desired heuristic function
+            if heuristic == "fraction":
+                return self.heuristic_fraction(state), None
+            elif heuristic == "weightboard":
+                return self.heuristic_weightBoard(state), None
 
         # initialize the value v to -inf
         value = -float('inf')
@@ -226,7 +251,7 @@ class AI_player(Player):
             if not flipped_positions:
                 continue
             # try to find a better value
-            actual_value, actual_event = self.min_value_ab(state, alpha, beta, depth-1)
+            actual_value, actual_event = self.min_value_ab(state, depth-1, heuristic, alpha, beta)
             # backtrack the actual changes on the board, change all the pieces that have to be changed
             state.backtrack(event, flipped_positions, self.color)
             # check if the actual value is bigger than the value v, if yes -> replace it and replace also the best possible event
@@ -243,7 +268,7 @@ class AI_player(Player):
         return value, best_event
 
 
-    def min_value_ab(self, state, alpha, beta, depth):
+    def min_value_ab(self, state, depth, heuristic, alpha, beta):
         """
         implementation if the min value function
         param state -> the current board situation/ state
@@ -256,14 +281,22 @@ class AI_player(Player):
         if self.terminal_test(state) or depth == 0:
             # there is only one possible move left, find this possible move
             only_possible_event = state.legal_events(self.opposite_color)
-            return self.heuristic_fraction(state), only_possible_event
+            # take the desired heuristic function
+            if heuristic == "fraction":
+                return self.heuristic_fraction(state), only_possible_event
+            elif heuristic == "weightboard":
+                return self.heuristic_weightBoard(state), only_possible_event
         
         # find all possible actions in the current state/ board situation
         possible_events = list(state.legal_events(self.opposite_color))
 
         # if there are no legal actions
         if len(possible_events) == 0:
-            return self.heuristic_fraction(state), None
+            # take the desired heuristic function
+            if heuristic == "fraction":
+                return self.heuristic_fraction(state), None
+            elif heuristic == "weightboard":
+                return self.heuristic_weightBoard(state), None
 
         # initialize the value v to +inf
         value = float('inf')
@@ -278,7 +311,7 @@ class AI_player(Player):
             if not flipped_positions:
                 continue
             # try to find a better value
-            actual_value, actual_event = self.max_value_ab(state, alpha, beta, depth-1)
+            actual_value, actual_event = self.max_value_ab(state, depth-1, heuristic, alpha, beta)
             # backtrack the actual changes on the board, change all the pieces that have to be changed
             state.backtrack(event, flipped_positions, self.opposite_color)
             
@@ -325,18 +358,17 @@ class AI_player(Player):
         fraction_pieces = difference_in_pieces / total_number_pieces
 
         return fraction_pieces
-    
+
     
     def heuristic_weightBoard(self, state):
 
         """
-        utility function (or objective function or payoff function)
-        defines the final numeric value for a game that ends in a certain state
+        heuristic function
+        multiplies the current position with a pre-defined board matrix and returns the score value
         param state -> the current state, the state for which the utility value has to be determined
-        returns the utility value for the current state (terminal state)
+        returns the heuristic value found for the current state
         """
 
-        """THIS FUNCTION WILL ONLY BE USED IF WE HAVE A WEIGHT MATRIX"""
         def board_to_matrix(board):
             """
             transform the board into a matrix
@@ -384,8 +416,9 @@ class AI_player(Player):
         O_value = np.sum(np.multiply(O_position, self.weightMatrix1))
 
         return  O_value - X_value
- 
-                    
+
+
+    
 
 
 
