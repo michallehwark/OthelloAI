@@ -23,14 +23,14 @@ if __name__ == "__main__":
             incorrect_input = False 
         elif input_value == 3:
             black = Human_player("X")
-            white = AI_player("O", "minimax_decision_algorithm", "weightboard", 2)
+            white = AI_player("O", "minimax_decision_algorithm", "weightboard", 5)
             incorrect_input = False 
         elif input_value == 4:
             black = Human_player("X")
-            white = AI_player("O", "alpha_beta_search_algorithm", "fraction", 5)
+            white = AI_player("O", "alpha_beta_search_algorithm", "fraction", 11)
         elif input_value == 5:
             black = Human_player("X")
-            white = AI_player("O", "alpha_beta_search_algorithm", "weightboard", 2)
+            white = AI_player("O", "alpha_beta_search_algorithm", "weightboard", 11)
         else:
             print('Please enter either a game mode from 1 to 5!')
             incorrect_input = True

@@ -74,7 +74,7 @@ class AI_player(Player):
         if self.algorithm == "alpha_beta_search_algorithm":
             event = self.alpha_beta_search(board, self.depth, self.heuristic)
 
-        #benchamark evaluation
+        # benchmark evaluation, count the number of explored nodes in the tree
         print(f"AI explored {self.exploredNodes} to make this move.")
         return event
 
@@ -170,7 +170,7 @@ class AI_player(Player):
         # find all possible actions in the current state/ board situation
         possible_events = list(state.legal_events(self.opposite_color))
 
-        #benchamrk
+        # benchmark, count the number of explored nodes in the tree
         self.exploredNodes += len(possible_events)
 
         # if there are no legal actions
@@ -243,7 +243,7 @@ class AI_player(Player):
         # find all possible actions in the current state/ board situation
         possible_events = list(state.legal_events(self.color))
 
-        #benchamrk
+        # benchmark, count the number of explored nodes in the tree
         self.exploredNodes += len(possible_events)
 
         # if there are no legal actions
@@ -306,7 +306,7 @@ class AI_player(Player):
         # find all possible actions in the current state/ board situation
         possible_events = list(state.legal_events(self.opposite_color))
 
-        #benchamrk
+        # benchmark, count the number of explored nodes in the tree
         self.exploredNodes += len(possible_events)
 
         # if there are no legal actions
