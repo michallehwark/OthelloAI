@@ -3,6 +3,8 @@ from game_implementation import Game
 from human_player import Human_player
 from AI_player import AI_player
 
+print("Hej")
+
 if __name__ == "__main__":
 
     # initialize the bolean to True in order to enter the loop at least once
